@@ -17,8 +17,9 @@ def header(message:str)->None:
 def checkid(student: Student) -> bool:
     with open(filename, 'r') as file:
         for stud in file:
-            ID, last_name, first_name, course, level = stud.strip().split(',')
-            if student.idno == ID:
+           # ID, last_name, first_name, course, level = stud.strip().split(',') 
+		   # e ditso nalang ni ayaw na isulod ug variable ang tanan fields, ang need raman diri is ang ID so ato nalng e ditso
+            if student.idno == stud.split(',')[0]: # ang 0 is ang IDno
                 return True
     return False
 	
@@ -31,7 +32,7 @@ def addStudent()->None:
 	level:str = input("Enter LEVEL :")
 	#call checkid for duplicate student entry
 	if checkid(Student(idno,lastname,firstname,course,level)):
-		print("Duplicate ID num")
+		print("Duplicate ID NO.")
 	else:
 		student = Student(idno,lastname,firstname,course,level)
 		f = open(filename,"a")
@@ -75,7 +76,7 @@ def deleteStudent()->None:
 				foundStudent = Student(ID,last_name,first_name,course,level)
 				print("Student found!")
 				
-				confirm = input("Do You Really Really Want To Delete This Student?")
+				confirm = input("Do You Really Really Want To Delete This Student?: ")
 				if confirm == 'Y' or confirm =='y':
 					foundStudent
 
@@ -92,31 +93,31 @@ def updateStudent()->None:
 	header("Update Student")
 	idNum = input("Enter id num to Update: ")
 	studentL: list = []
-
+	found = False
 	with open(filename, 'r') as file:
-		for stud in file:
+
+		studentL = list(file)
+		for i,stud in enumerate(studentL):
 			ID, last_name, first_name, course, level = stud.strip().split(',')
 
 			if idNum == ID:
 				foundStudent = Student(ID, last_name, first_name, course, level)
 				print("Student found!")
-				print(foundStudent.str())
+				print(foundStudent.__str__())
 				print("Update!")
 				last: str = input("Enter New LASTNAME")
 				first: str = input("Enter New FIRSTNAME")
 				c: str = input("Enter New COURSE")
 				l: str = input("Enter New LEVEL")
 				newStudent = Student(foundStudent.idno,last,first,c,l)
-
-				studentL = newStudent.str()
-
-			else:
-				studentL = stud
-	with open(filename, 'w+') as writer:
-		for i in studentL:
-			writer.write(i)
-
-		writer.close()
+				studentL[i]= newStudent.__str__()
+				found = True
+	if found:
+		with open(filename, 'w+') as writer:
+			writer.write(''.join(studentL))
+		print("Student updated.")
+	else:
+		print("Student not found.")
 
 def displayAllStudent()->None:
 	header("Display All Student")
